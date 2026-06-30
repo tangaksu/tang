@@ -219,24 +219,20 @@ class AKShareAdapter:
         try:
             import akshare as ak
             akshare_limiter.acquire_sync()
-            df = ak.stock_analyst_forecast_em(symbol=code)
+            # stock_analyst_forecast_em was removed in AKShare 1.18.x;
+            # use stock_profit_forecast_ths (同花顺盈利预测) which accepts a
+            # single stock symbol and returns institutional EPS forecasts.
+            df = ak.stock_profit_forecast_ths(symbol=code, indicator="业绩预测详表-机构")
             if df is None or df.empty:
                 return AnalystForecast(code=code)
-            # Aggregate rating counts
-            counts: dict[str, int] = {}
-            for _, row in df.iterrows():
-                rating = str(row.get("评级", ""))
-                counts[rating] = counts.get(rating, 0) + 1
+            # Column names vary; extract target price if present
+            tp_col = next((c for c in df.columns if "目标价" in c), None)
+            tp_series = df[tp_col].apply(_safe_float) if tp_col else pd.Series(dtype=float)
             forecast = AnalystForecast(
                 code=code,
-                rating_buy=counts.get("买入", 0),
-                rating_overweight=counts.get("增持", 0),
-                rating_neutral=counts.get("中性", 0),
-                rating_underweight=counts.get("减持", 0),
-                rating_sell=counts.get("卖出", 0),
-                target_price_avg=_safe_float(df.get("目标价", pd.Series()).mean()),
-                target_price_high=_safe_float(df.get("目标价", pd.Series()).max()),
-                target_price_low=_safe_float(df.get("目标价", pd.Series()).min()),
+                target_price_avg=_safe_float(tp_series.mean()) if not tp_series.empty else None,
+                target_price_high=_safe_float(tp_series.max()) if not tp_series.empty else None,
+                target_price_low=_safe_float(tp_series.min()) if not tp_series.empty else None,
             )
             self._cache.set_sync(key, forecast.model_dump(), TTL_RESEARCH)
             return forecast
