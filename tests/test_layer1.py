@@ -22,6 +22,12 @@ class TestStockQueryParser:
     def test_parse_byd(self):
         assert self.parser.parse("比亚迪002594最近怎么样") == "002594"
 
+    def test_parse_ludi_xiebo(self):
+        assert self.parser.parse("请帮我分析一下绿的谐波") == "688522"
+
+    def test_parse_ludi_xiebo_short(self):
+        assert self.parser.parse("绿的最近走势如何") == "688522"
+
     def test_parse_no_match(self):
         assert self.parser.parse("今天天气不错") is None
 
