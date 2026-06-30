@@ -84,7 +84,7 @@ class StrategyFactory:
         # Simple heuristic fitness per strategy
         scores.append((Strategy.VALUE_GROWTH, sa * 0.6 + sb * 0.2 + sc * 0.2))
         scores.append((Strategy.HIGH_DIVIDEND, (
-            (fin.dividend_yield or 0) * 5 + sa * 0.4
+            (fin.dividend_yield or 0) * 5 + sa * 0.4 if fin else sa * 0.4
         )))
         scores.append((Strategy.GROWTH_CYCLE, sa * 0.4 + sb * 0.3 + sc * 0.3))
         scores.append((Strategy.TURNAROUND, sa * 0.3 + sb * 0.4 + sc * 0.3))

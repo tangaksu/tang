@@ -61,7 +61,7 @@ class TestTemplateEngine:
         assert "公司业务拆解" in html
         assert "M01" in html
 
-
+    def test_render_full_report_contains_key_sections(self):
         report = _sample_report()
         html = self.engine.render_full_report(report)
         assert "贵州茅台" in html
@@ -70,7 +70,7 @@ class TestTemplateEngine:
         assert "交易执行确定性" in html
         assert "情景分析" in html or "情景" in html
 
-    def test_render_full_report_no_script_injection(self):
+
         """Basic XSS guard – module content is rendered with autoescape."""
         mod = ModuleOutput(
             module_id="M99",

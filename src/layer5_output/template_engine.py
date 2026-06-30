@@ -61,7 +61,7 @@ class TemplateEngine:
     def __init__(self) -> None:
         self._env = Environment(
             loader=FileSystemLoader(str(_TEMPLATES_DIR)),
-            autoescape=True,  # enable for all templates (*.j2 files contain HTML)
+            autoescape=select_autoescape(enabled_extensions=("html", "j2", "html.j2")),
         )
 
     # ------------------------------------------------------------------
