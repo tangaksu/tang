@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=71", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "openclaw-aksu-stock"
+version = "5.0.0"
+description = "OpenClaw A股机构级全维度股票投资分析报告生成技能"
+requires-python = ">=3.11"
+dependencies = [
+    "akshare==1.18.64",
+    "requests>=2.31.0",
+    "httpx>=0.27.0",
+    "pydantic>=2.7.0",
+    "jinja2>=3.1.4",
+    "aiohttp>=3.9.5",
+    "aiosqlite>=0.20.0",
+    "python-dateutil>=2.9.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

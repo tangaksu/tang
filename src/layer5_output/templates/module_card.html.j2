@@ -1,0 +1,59 @@
+<div class="module-card" id="{{ module_id }}">
+  <div class="mc-header">
+    <span class="mc-id">{{ module_id }}</span>
+    <span class="mc-title">{{ module_title }}</span>
+    <span class="mc-score" style="color:{{ score_color }}">
+      {{ module_score }}/{{ module_max_score }} · {{ star_line }}
+    </span>
+  </div>
+  <div class="mc-body">
+    <p class="mc-conclusion">{{ core_conclusion }}</p>
+
+    {% if key_tags %}
+    <div class="mc-tags">
+      {% for tag in key_tags %}
+      <span class="tag blue">{{ tag }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if risk_deductions %}
+    <div class="mc-risks">
+      {% for r in risk_deductions %}
+      <div class="risk-item">⚠️ {{ r }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if evidence_chain %}
+    <div class="mc-evidence">
+      <div class="ev-title">证据链</div>
+      {% for ev in evidence_chain %}
+      <div class="ev-item ev-{{ ev.strength }}">
+        <span class="ev-type">[{{ ev.evidence_type }}·{{ ev.strength }}]</span>
+        {{ ev.conclusion }}
+        {% if ev.source %}<span class="ev-source">– {{ ev.source }}</span>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="mc-suggestions">
+      {% if short_term_suggestion %}
+      <span class="sug-label">短线：</span>{{ short_term_suggestion }}
+      {% endif %}
+      {% if mid_term_suggestion %}
+      | <span class="sug-label">中线：</span>{{ mid_term_suggestion }}
+      {% endif %}
+      {% if long_term_suggestion %}
+      | <span class="sug-label">长线：</span>{{ long_term_suggestion }}
+      {% endif %}
+    </div>
+
+    {% if data_missing_fields %}
+    <div class="mc-missing">
+      🔍 数据不足字段（评分置信度低）：{{ data_missing_fields | join("、") }}
+    </div>
+    {% endif %}
+  </div>
+</div>

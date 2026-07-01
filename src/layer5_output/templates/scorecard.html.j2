@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+         background: #0f172a; color: #e2e8f0; }
+
+  .scorecard-wrapper {
+    max-width: 1200px; margin: 0 auto; padding: 24px 16px;
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 24px; }
+  .header h1 { font-size: 1.6rem; font-weight: 700; color: #f1f5f9; }
+  .header .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 4px; }
+
+  /* Three score cards */
+  .cards-row {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .score-card {
+    flex: 1; min-width: 280px;
+    border-radius: 16px; padding: 24px; text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+  }
+  .score-card .card-title { font-size: 0.8rem; font-weight: 600;
+                             text-transform: uppercase; letter-spacing: 0.1em;
+                             opacity: 0.7; margin-bottom: 12px; }
+  .score-card .big-score {
+    font-size: 4rem; font-weight: 800; line-height: 1;
+    margin-bottom: 6px;
+  }
+  .score-card .star-line { font-size: 1.5rem; margin-bottom: 8px; }
+  .score-card .one-liner { font-size: 0.85rem; opacity: 0.85; margin-bottom: 12px; }
+  .score-card .action-box {
+    background: rgba(255,255,255,0.08); border-radius: 8px;
+    padding: 10px; font-size: 0.8rem; line-height: 1.5;
+  }
+
+  /* Color classes */
+  .c-deep-green  { color: #22c55e; border-color: #22c55e44; background: #14532d22; }
+  .c-light-green { color: #86efac; border-color: #86efac44; background: #16653222; }
+  .c-yellow      { color: #fbbf24; border-color: #fbbf2444; background: #7c3a0022; }
+  .c-orange      { color: #f97316; border-color: #f9731644; background: #7c2d1222; }
+  .c-red         { color: #ef4444; border-color: #ef444444; background: #7f1d1d22; }
+
+  /* Quick-view strip */
+  .quickview {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+  }
+  .qv-item {
+    background: rgba(255,255,255,0.04); border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08); padding: 14px 16px;
+  }
+  .qv-item .qv-label { font-size: 0.72rem; opacity: 0.6; margin-bottom: 4px; }
+  .qv-item .qv-value { font-size: 0.95rem; font-weight: 600; }
+
+  /* Tags */
+  .tag {
+    display: inline-block; border-radius: 6px; padding: 3px 10px;
+    font-size: 0.75rem; font-weight: 600; margin: 3px;
+    background: rgba(255,255,255,0.1);
+  }
+  .tag.green  { background: #15803d33; color: #86efac; }
+  .tag.yellow { background: #92400e33; color: #fde68a; }
+  .tag.red    { background: #7f1d1d33; color: #fca5a5; }
+  .tag.blue   { background: #1e3a5f33; color: #93c5fd; }
+
+  /* Enhanced info strip */
+  .enhanced-strip {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    background: rgba(255,255,255,0.03); border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 16px; margin-bottom: 8px;
+  }
+  .e-item { flex: 1; min-width: 200px; }
+  .e-item .e-label { font-size: 0.72rem; opacity: 0.55; margin-bottom: 4px; }
+  .e-item .e-value { font-size: 0.9rem; font-weight: 600; }
+
+  .warn-box {
+    border-left: 3px solid #f97316; background: rgba(249,115,22,0.08);
+    border-radius: 0 8px 8px 0; padding: 10px 14px;
+    font-size: 0.82rem; color: #fdba74; margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="scorecard-wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>{{ stock_name }}（{{ stock_code }}）· 机构级全维度投资分析报告</h1>
+    <div class="subtitle">
+      最新价 <strong>{{ current_price }}</strong>
+      &nbsp;|&nbsp; 涨跌 <strong>{{ change_pct }}</strong>
+      &nbsp;|&nbsp; {{ analysis_time }}
+      &nbsp;|&nbsp; OpenClaw A股投研技能 V5.0.0
+    </div>
+  </div>
+
+  <!-- Three Score Cards -->
+  <div class="cards-row">
+
+    <!-- Card A: 综合投资价值 -->
+    <div class="score-card {{ score_a_color }}">
+      <div class="card-title">综合投资价值评分</div>
+      <div class="big-score {{ score_a_color }}">{{ score_a_total }}</div>
+      <div class="star-line">{{ score_a_stars }}</div>
+      <div class="one-liner">{{ score_a_conclusion }}</div>
+      <div class="action-box">
+        {% for item in score_a_plus[:2] %}
+        ✅ {{ item }}<br>
+        {% endfor %}
+        {% for item in score_a_minus[:1] %}
+        ⚠️ {{ item }}<br>
+        {% endfor %}
+        <hr style="border-color:rgba(255,255,255,0.1);margin:8px 0">
+        {{ score_a_action }}
+      </div>
+    </div>
+
+    <!-- Card B: 现价买入性价比 -->
+    <div class="score-card {{ score_b_color }}">
+      <div class="card-title">现价买入性价比评分</div>
+      <div class="big-score {{ score_b_color }}">{{ score_b_total }}</div>
+      <div class="star-line">{{ score_b_stars }}</div>
+      <div class="one-liner">{{ score_b_conclusion }}</div>
+      <div class="action-box">
+        {% for item in score_b_plus[:2] %}
+        ✅ {{ item }}<br>
+        {% endfor %}
+        {% for item in score_b_minus[:1] %}
+        ⚠️ {{ item }}<br>
+        {% endfor %}
+        <hr style="border-color:rgba(255,255,255,0.1);margin:8px 0">
+        {{ score_b_action }}
+      </div>
+    </div>
+
+    <!-- Card C: 交易执行确定性 -->
+    <div class="score-card {{ score_c_color }}">
+      <div class="card-title">交易执行确定性评分</div>
+      <div class="big-score {{ score_c_color }}">{{ score_c_total }}</div>
+      <div class="star-line">{{ score_c_stars }}</div>
+      <div class="one-liner">{{ score_c_conclusion }}</div>
+      <div class="action-box">
+        {% for item in score_c_plus[:2] %}
+        ✅ {{ item }}<br>
+        {% endfor %}
+        {% for item in score_c_minus[:1] %}
+        ⚠️ {{ item }}<br>
+        {% endfor %}
+        <hr style="border-color:rgba(255,255,255,0.1);margin:8px 0">
+        {{ score_c_action }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Quick View -->
+  <div class="quickview">
+    <div class="qv-item">
+      <div class="qv-label">标的</div>
+      <div class="qv-value">{{ stock_name }} · {{ stock_code }}</div>
+    </div>
+    <div class="qv-item">
+      <div class="qv-label">所属板块 / 赛道</div>
+      <div class="qv-value">{{ industry }} / {{ sub_industry }}</div>
+    </div>
+    <div class="qv-item">
+      <div class="qv-label">当前市场风格</div>
+      <div class="qv-value">{{ market_style_tag }}</div>
+    </div>
+    <div class="qv-item">
+      <div class="qv-label">当前交易状态</div>
+      <div class="qv-value">
+        <span class="tag {{ trade_status_color }}">{{ trade_status }}</span>
+      </div>
+    </div>
+    <div class="qv-item">
+      <div class="qv-label">联合场景判断</div>
+      <div class="qv-value">{{ joint_scenario }}</div>
+    </div>
+    <div class="qv-item">
+      <div class="qv-label">仓位建议</div>
+      <div class="qv-value">{{ position_advice }}</div>
+    </div>
+  </div>
+
+  <!-- Enhanced Info Strip -->
+  <div class="enhanced-strip">
+    <div class="e-item">
+      <div class="e-label">当前估值区间</div>
+      <div class="e-value">{{ valuation_zone }}</div>
+    </div>
+    <div class="e-item">
+      <div class="e-label">当前主驱动标签</div>
+      <div class="e-value">{{ main_driver }}</div>
+    </div>
+    <div class="e-item">
+      <div class="e-label">最关键失效条件</div>
+      <div class="e-value" style="color:#fca5a5">{{ key_failure_condition }}</div>
+    </div>
+  </div>
+
+  {% if key_risks %}
+  <div class="warn-box">
+    ⚠️ 核心风险提示：
+    {% for r in key_risks %}{{ r }}{% if not loop.last %} | {% endif %}{% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+</body>
+</html>
